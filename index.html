@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark">
-<title>База TG-контактов — брони и ремонты</title>
+<title>База TG-контактов — клининг и ремонт</title>
 <style>
   :root{
     --bg:#0A0F1A; --panel:#111A2B; --panel2:#0E1626; --line:rgba(255,255,255,.08);
@@ -191,7 +191,7 @@
   <header class="top">
     <div class="brand">
       <h1>База TG-контактов</h1>
-      <p>брони · салоны, барбершопы, мастера &nbsp;|&nbsp; ремонты под ключ</p>
+      <p>клінінг та прибирання &nbsp;|&nbsp; ремонт квартир і будинків під ключ</p>
     </div>
     <div class="stats" id="stats"></div>
     <div class="topActions">
@@ -215,8 +215,8 @@
     <div class="filters">
       <div class="chips" id="nicheChips">
         <button class="chip" data-niche="all" aria-pressed="true">Все</button>
-        <button class="chip" data-niche="book" aria-pressed="false">Брони</button>
-        <button class="chip" data-niche="repair" aria-pressed="false">Ремонты</button>
+        <button class="chip" data-niche="book" aria-pressed="false">Клининг</button>
+        <button class="chip" data-niche="repair" aria-pressed="false">Ремонт</button>
       </div>
       <select id="cityFilter"><option value="">Все города</option></select>
       <select id="statusFilter"><option value="">Все статусы</option></select>
@@ -233,8 +233,8 @@
     <div class="filters">
       <div class="chips" id="tplChips">
         <button class="chip" data-niche="all" aria-pressed="true">Все</button>
-        <button class="chip" data-niche="book" aria-pressed="false">Брони</button>
-        <button class="chip" data-niche="repair" aria-pressed="false">Ремонты</button>
+        <button class="chip" data-niche="book" aria-pressed="false">Клининг</button>
+        <button class="chip" data-niche="repair" aria-pressed="false">Ремонт</button>
       </div>
       <span class="meta">В шаблоне замени {название} · {район} · {источник} · {подниша}. Лучше всего — через карточку контакта: там подставится само.</span>
     </div>
@@ -265,7 +265,7 @@
     <ol>
       <li>Вкладка «Поиск» → запрос по своему городу → Google → 20–30 профилей t.me и Instagram.</li>
       <li>Instagram: в био почти всегда t.me-ссылка. Открыл, скопировал ник, добавил.</li>
-      <li>Telegram: поиск «барбершоп Київ» → вкладка «Каналы» → bio → @username.</li>
+      <li>Telegram: поиск «клінінг Київ» или «ремонт квартир Київ» → вкладка «Каналы» → bio → @username.</li>
       <li>2GIS / Google Maps: у 30–40% заведений в контактах указан Telegram.</li>
       <li>В карточке заполняй «хук» — одну конкретную деталь. Без неё сообщение читается как реклама.</li>
     </ol>
@@ -327,7 +327,7 @@
       <div class="field"><label>Компания</label><input type="text" id="fCompany" placeholder="Барбершоп CORNER"></div>
       <div class="field"><label>Ниша</label>
         <select id="fNiche">
-          <option value="book">Брони — салон / барбершоп / мастер</option>
+          <option value="book">Клининг — уборка, химчистка, после ремонта</option>
           <option value="repair">Ремонты под ключ</option>
         </select>
       </div>
@@ -365,7 +365,7 @@
     <div class="sub">Одна строка = один контакт. Разделитель — <b>|</b> или табуляция. Порядок: название | @ник | город | район | хук. Хвост можно не заполнять.</div>
     <div class="field"><label>Ниша для всех строк</label>
       <select id="bulkNiche">
-        <option value="book">Брони — салоны / барбершопы / мастера</option>
+        <option value="book">Клининг — уборка, химчистка, после ремонта</option>
         <option value="repair">Ремонты под ключ</option>
       </select>
     </div>
@@ -387,8 +387,8 @@
 
   // ---------------- данные ----------------
   const NICHES = {
-    book:   {label:"Брони",   color:"var(--book)"},
-    repair: {label:"Ремонты", color:"var(--rep)"}
+    book:   {label:"Клининг", color:"var(--book)"},
+    repair: {label:"Ремонт",  color:"var(--rep)"}
   };
 
   const STATUSES = [
@@ -407,74 +407,1074 @@
   const CITIES = ["Київ","Львів","Дніпро","Одеса","Харків","Інше"];
 
   const TEMPLATES = [
-    {n:1, niche:"book", angle:"Оффер + живое демо",
-     when:"Салон или барбершоп без сайта, но с активным Instagram",
-     text:"{название}, привет! Нашёл вас через {источник} — вы в {район}. Делаю сайты с онлайн-записью: клиент сам выбирает услугу, мастера и время, заявка сразу приходит вам в Telegram, без переписки.\n\nПример можно потыкать как клиент: https://beauty-studio-blue.vercel.app\n\nСкажите, у вас запись сейчас в директ или через администратора? Если интересно, соберу такой же на ваших услугах и ценах."},
-    {n:2, niche:"book", angle:"Наблюдение про директ",
-     when:"Запись только через директ или переписку",
-     text:"{название}, привет! Зашёл на ваш профиль: записаться можно только в директ, и админ отвечает руками. У салонов на это уходит 5–10 часов в неделю — обычно это время после закрытия.\n\nЯ делаю страницу записи, где клиент сам выбирает услугу, мастера и время. Заявка приходит в Telegram.\n\nСобрать макет на ваших услугах и ценах? Бесплатно, один день."},
-    {n:3, niche:"book", angle:"Аудит их сайта",
-     when:"Сайт есть, но старый, медленный или без записи",
-     text:"{название}, привет! Открыл ваш сайт с телефона: {наблюдение}. Это стоит заявок — человек уходит к тому, у кого проще записаться.\n\nЯ как раз собираю и чиню такие сайты под запись. Могу прислать 3 конкретные правки — без денег и без созвонов.\n\nПрислать?"},
-    {n:4, niche:"book", angle:"Только Instagram",
-     when:"Вся жизнь в соцсетях, ссылка ведёт в директ",
-     text:"{название}, привет! У вас весь трафик в Instagram, а в шапке — ссылка в директ. Кто не любит писать первым, просто уходит.\n\nСобираю страницу-визитку: прайс, мастера, галерея и запись. Одна ссылка, всё понятно за 10 секунд.\n\nПоказать пример в вашей нише?"},
-    {n:5, niche:"book", angle:"Сезон",
-     when:"За 4–6 недель до пика: декабрь, 8 марта, выпускной",
-     text:"{название}, привет! До {сезон} остаётся {N} недель — в это время запись обычно забита, а часть заявок теряется в переписке.\n\nДелаю сайт с записью и напоминаниями, чтобы клиент бронировал сам, в любое время.\n\nПоказать, как это работает у салонов в вашем городе?"},
-    {n:6, niche:"book", angle:"Вопрос про Google",
-     when:"Есть только соцсети, нет сайта",
-     text:"{название}, привет! Проверяли, что Google выдаёт по «{подниша} {район}»? Обычно в топе те, у кого есть сайт с ценами — не потому что лучше, а потому что их вообще можно найти.\n\nЯ делаю такие страницы для салонов и мастеров: структура под запросы, запись, заявки в Telegram.\n\nХотите, покажу, как выглядела бы ваша?"},
-    {n:7, niche:"book", angle:"Бесплатный макет",
-     when:"Холодная аудитория, длинный заход не сработает",
-     text:"{название}, привет! Я собираю сайты для бьюти-сферы. Предложение простое: сделаю макет главной страницы на ваших фото и услугах — бесплатно, за день.\n\nПонравится — обсудим запуск. Не понравится — макет останется у вас, без обязательств.\n\nСкинуть, когда будет готово?"},
-    {n:8, niche:"book", angle:"Частный мастер",
-     when:"Один мастер, без студии и администратора",
-     text:"{название}, привет! Вы работаете сами — и это плюс, но клиенту негде посмотреть прайс и записаться, кроме переписки.\n\nСобираю страницу для мастеров: услуги с ценами, галерея работ, форма записи с уведомлением в Telegram. Без подписок, сайт ваш навсегда.\n\nПоказать, как это выглядит?"},
-    {n:9, niche:"repair", angle:"Оффер + кейс в нише",
-     when:"Ремонт под ключ, есть Instagram или OLX",
-     text:"{название}, привет! Вы делаете ремонт под ключ — нашёл вас через {источник}. Я собираю сайты для ремонтников: объекты с фото и сроками вместо ленты, калькулятор бюджета, форма заявки в Telegram.\n\nПример в вашей нише: https://xal1fat.github.io/terra/\n\nСколько заявок в месяц вы получаете сейчас и откуда в основном?"},
-    {n:10, niche:"repair", angle:"Дорогой чек",
-     when:"Средний чек выше 300 тыс. грн",
-     text:"{название}, привет! Ремонт — дорогая покупка: клиент перед звонком сравнивает 5–6 подрядчиков в интернете. Если сайта нет, сравнивают только по соцсетям.\n\nСобираю сайт-портфолио: объекты с фото и метражом, цена за м², форма заявки в Telegram.\n\nПоказать, как это выглядело бы на ваших объектах?"},
-    {n:11, niche:"repair", angle:"Калькулятор смет",
-     when:"Много входящих «а сколько будет стоить»",
-     text:"{название}, привет! Половина заявок на ремонт — это «сколько будет стоить» без деталей. На такие уходит по 20–30 минут переписки, и половина не отвечает потом.\n\nДелаю сайт с калькулятором: клиент сам прикидывает порядок цены и оставляет заявку уже с площадью, типом ремонта и сроками.\n\nГлянуть пример?"},
-    {n:12, niche:"repair", angle:"Новостройки",
-     when:"Работают по новостройкам, сезон сдачи",
-     text:"{название}, привет! Сдаётся много новостроек, и люди ищут «ремонт под ключ» в поиске — пишут тем, кого нашли.\n\nДелаю сайты, которые находят по таким запросам: страницы под услуги и районы, форма заявки в Telegram.\n\nАктуально сейчас или у вас загрузка и так полная?"},
-    {n:13, niche:"repair", angle:"Аудит их сайта",
-     when:"Сайт есть, но без фото объектов, цен и формы",
-     text:"{название}, привет! Посмотрел ваш сайт: {наблюдение}. На ремонте такие вещи стоят 20–30% заявок — клиент не видит, за что платит, и уходит.\n\nМогу прислать короткий список правок — бесплатно, без созвонов и обязательств.\n\nПрислать?"},
-    {n:14, niche:"repair", angle:"Вопрос про Google",
-     when:"Только соцсети и сарафан",
-     text:"{название}, привет! Проверяли, что Google выдаёт по «ремонт квартир {район}»? В топе почти всегда сайты, а не профили в соцсетях — оттуда и идут заявки.\n\nСобираю именно такие сайты для ремонтников: структура под запросы, объекты, формы.\n\nПоказать, как выглядел бы ваш?"},
-    {n:15, niche:"repair", angle:"Бесплатный макет",
-     when:"Холодный контакт без зацепки",
-     text:"{название}, привет! Соберу макет страницы под ваши услуги: объекты, цена за м², форма заявки. Бесплатно, за день — чтобы вы просто увидели, как это может выглядеть.\n\nПонравится — обсудим запуск. Нет — макет останется у вас.\n\nСкинуть результат?"},
-    {n:16, niche:"repair", angle:"Бригада / прораб",
-     when:"Небольшая бригада без бренда",
-     text:"{название}, привет! Вы работаете бригадой, клиент ищет вас по отзывам — а показать объекты и цены негде, кроме ленты.\n\nДелаю сайт-визитку: 5–7 объектов, прайс, форма заявки в Telegram, ваш домен. Без подписок — заплатили один раз, сайт ваш.\n\nИнтересно посмотреть пример?"}
-  ];
+ {
+  "n": 1,
+  "niche": "book",
+  "angle": "Оффер + портфолио",
+  "when": "Компания с активным Instagram и без сайта",
+  "text": "{название}, привет! Нашёл вас через {источник} — вы в {район}. Делаю сайты для клининга: услуги с ценами, калькулятор уборки, форма заявки, которая падает вам в Telegram.\n\nПример можно потыкать: https://xal1fat.github.io/\n\nСкажите, заявки сейчас идут в директ или на телефон? Если интересно, покажу, как это выглядело бы с вашими ценами."
+ },
+ {
+  "n": 2,
+  "niche": "book",
+  "angle": "Наблюдение: только директ",
+  "when": "Цены и заказ — только в переписке",
+  "text": "{название}, привет! Зашёл в профиль: заказать уборку можно только через директ или по телефону, цены надо спрашивать. Часть людей на этом шаге уходит.\n\nСобираю страницу, где видно цену за м², что входит в уборку и есть форма заявки. Заявка приходит в Telegram.\n\nСобрать макет на ваших услугах? Бесплатно, один день."
+ },
+ {
+  "n": 3,
+  "niche": "book",
+  "angle": "Аудит их сайта",
+  "when": "Сайт есть, но без цен или без формы",
+  "text": "{название}, привет! Открыл ваш сайт с телефона: {наблюдение}. На клининге это стоит заявок — человек не находит цену и уходит туда, где проще.\n\nМогу прислать 3 конкретные правки — бесплатно, без созвонов и обязательств.\n\nПрислать?"
+ },
+ {
+  "n": 4,
+  "niche": "book",
+  "angle": "Только Instagram",
+  "when": "Вся жизнь в соцсетях, ссылка ведёт в директ",
+  "text": "{название}, привет! У вас весь трафик в Instagram, а в шапке — ссылка в директ. Кто не любит писать первым, просто уходит.\n\nСобираю страницу-визитку: прайс, что входит в уборку, форма заявки. Одна ссылка, всё понятно за 10 секунд.\n\nПоказать пример в вашей нише?"
+ },
+ {
+  "n": 5,
+  "niche": "book",
+  "angle": "Запрос «после ремонта»",
+  "when": "Есть уборка после ремонта или химчистка",
+  "text": "{название}, привет! У вас есть уборка после ремонта — а её чаще всего ищут в Google: «прибирання після ремонту {район}». Спрос есть, а страницы, на которую приходят эти люди, нет.\n\nДелаю страницы под такие запросы плюс заявку в Telegram.\n\nПоказать, как это работает у клининга?"
+ },
+ {
+  "n": 6,
+  "niche": "book",
+  "angle": "Вопрос про Google",
+  "when": "Только соцсети, нет сайта",
+  "text": "{название}, привет! Проверяли, что Google выдаёт по «клінінг {район}»? В топе те, у кого есть сайт с ценами — не потому что лучше убирают.\n\nСобираю такие сайты для клининга: услуги, цены за м², форма заявки в Telegram.\n\nХотите, покажу, как выглядела бы ваша?"
+ },
+ {
+  "n": 7,
+  "niche": "book",
+  "angle": "Бесплатный макет",
+  "when": "Холодный контакт, длинный заход не сработает",
+  "text": "{название}, привет! Соберу макет страницы под ваши услуги: цены, что входит, форма заявки. Бесплатно, за день — чтобы вы просто увидели, как это может выглядеть.\n\nПонравится — обсудим запуск. Нет — макет останется у вас.\n\nСкинуть результат?"
+ },
+ {
+  "n": 8,
+  "niche": "book",
+  "angle": "Небольшая команда",
+  "when": "Частный клинер или маленькая бригада",
+  "text": "{название}, привет! Вы работаете небольшой командой — это плюс, но клиенту негде посмотреть цены и свободное время, кроме переписки.\n\nСобираю страницу для клинеров: услуги с ценами, форма заявки в Telegram, ваш домен. Без подписок.\n\nПоказать, как это выглядит?"
+ },
+ {
+  "n": 9,
+  "niche": "repair",
+  "angle": "Оффер + кейс в нише",
+  "when": "Ремонт под ключ, есть Instagram или OLX",
+  "text": "{название}, привет! Вы делаете ремонт под ключ — нашёл вас через {источник}. Я собираю сайты для ремонтников: объекты с фото и сроками вместо ленты, калькулятор бюджета, форма заявки в Telegram.\n\nПример в вашей нише: https://xal1fat.github.io/terra/\n\nСколько заявок в месяц вы получаете сейчас и откуда в основном?"
+ },
+ {
+  "n": 10,
+  "niche": "repair",
+  "angle": "Дорогой чек",
+  "when": "Средний чек выше 300 тыс. грн",
+  "text": "{название}, привет! Ремонт — дорогая покупка: клиент перед звонком сравнивает 5–6 подрядчиков в интернете. Если сайта нет, сравнивают только по соцсетям.\n\nСобираю сайт-портфолио: объекты с фото и метражом, цена за м², форма заявки в Telegram.\n\nПоказать, как это выглядело бы на ваших объектах?"
+ },
+ {
+  "n": 11,
+  "niche": "repair",
+  "angle": "Калькулятор смет",
+  "when": "Много входящих «а сколько будет стоить»",
+  "text": "{название}, привет! Половина заявок на ремонт — это «сколько будет стоить» без деталей. На такие уходит по 20–30 минут переписки, и половина не отвечает потом.\n\nДелаю сайт с калькулятором: клиент сам прикидывает порядок цены и оставляет заявку уже с площадью, типом ремонта и сроками.\n\nГлянуть пример?"
+ },
+ {
+  "n": 12,
+  "niche": "repair",
+  "angle": "Новостройки",
+  "when": "Работают по новостройкам, сезон сдачи",
+  "text": "{название}, привет! Сдаётся много новостроек, и люди ищут «ремонт под ключ» в поиске — пишут тем, кого нашли.\n\nДелаю сайты, которые находят по таким запросам: страницы под услуги и районы, форма заявки в Telegram.\n\nАктуально сейчас или у вас загрузка и так полная?"
+ },
+ {
+  "n": 13,
+  "niche": "repair",
+  "angle": "Аудит их сайта",
+  "when": "Сайт есть, но без фото объектов, цен и формы",
+  "text": "{название}, привет! Посмотрел ваш сайт: {наблюдение}. На ремонте такие вещи стоят 20–30% заявок — клиент не видит, за что платит, и уходит.\n\nМогу прислать короткий список правок — бесплатно, без созвонов и обязательств.\n\nПрислать?"
+ },
+ {
+  "n": 14,
+  "niche": "repair",
+  "angle": "Вопрос про Google",
+  "when": "Только соцсети и сарафан",
+  "text": "{название}, привет! Проверяли, что Google выдаёт по «ремонт квартир {район}»? В топе почти всегда сайты, а не профили в соцсетях — оттуда и идут заявки.\n\nСобираю именно такие сайты для ремонтников: структура под запросы, объекты, формы.\n\nПоказать, как выглядел бы ваш?"
+ },
+ {
+  "n": 15,
+  "niche": "repair",
+  "angle": "Бесплатный макет",
+  "when": "Холодный контакт без зацепки",
+  "text": "{название}, привет! Соберу макет страницы под ваши услуги: объекты, цена за м², форма заявки. Бесплатно, за день — чтобы вы просто увидели, как это может выглядеть.\n\nПонравится — обсудим запуск. Нет — макет останется у вас.\n\nСкинуть результат?"
+ },
+ {
+  "n": 16,
+  "niche": "repair",
+  "angle": "Бригада / прораб",
+  "when": "Небольшая бригада без бренда",
+  "text": "{название}, привет! Вы работаете бригадой, клиент ищет вас по отзывам — а показать объекты и цены негде, кроме ленты.\n\nДелаю сайт-визитку: 5–7 объектов, прайс, форма заявки в Telegram, ваш домен. Без подписок — заплатили один раз, сайт ваш.\n\nИнтересно посмотреть пример?"
+ }
+];
 
   const SEED = [
-    {id:"s1", niche:"book", company:"Perfect Beauty Group", sub:"салон краси", city:"Київ", district:"Позняки",
-     tg:"prfectbeautybot", src:"Сайт компании", srcUrl:"https://prfect.beauty/",
-     hook:"Есть бот записи, но нет сайта-каталога под Google — предложить сайт + запись через бота",
-     lang:"UA", template:1, status:"new", touched:"", notes:""},
-    {id:"s2", niche:"book", company:"Барбершоп CORNER", sub:"барбершоп", city:"Інше", district:"вул. Мира 43",
-     tg:"CORNERbarbershopp", src:"Google", srcUrl:"https://t.me/CORNERbarbershopp",
-     hook:"Только канал в ТГ, 57 подписчиков, сайта нет — первый кандидат на страницу с прайсом",
-     lang:"RU", template:2, status:"new", touched:"", notes:""},
-    {id:"s3", niche:"book", company:"LINA | BARBER", sub:"барбершоп", city:"Інше", district:"—",
-     tg:"linahair8", src:"Google", srcUrl:"https://t.me/linahair8",
-     hook:"Канал 89 подписчиков, ни города, ни цен — предложить визитку с прайсом и записью",
-     lang:"RU", template:2, status:"new", touched:"", notes:""},
-    {id:"s4", niche:"repair", company:"РЕМОНТ ТА БУДІВНИЦТВО (канал)", sub:"ремонт под ключ", city:"Київ", district:"—",
-     tg:"budremkiev", src:"Google", srcUrl:"https://t.me/budremkiev",
-     hook:"Канал 526 підписників, де замовники шукають майстрів — читати заявки й писати напряму",
-     lang:"UA", template:9, status:"new", touched:"", notes:""}
-  ];
+ {
+  "id": "p001",
+  "niche": "repair",
+  "company": "РЕМОНТ КИЕВ | СТРОИТЕЛЬСТВО",
+  "sub": "ремонт під ключ",
+  "city": "Київ",
+  "district": "—",
+  "tg": "remont_kyiv",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/remont_kyiv",
+  "hook": "Добавить объявление: @ua_bobot Список групп: @ua_boards Админ и реклама: @ua_bobot",
+  "lang": "RU",
+  "template": 9,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p002",
+  "niche": "repair",
+  "company": "RG- Ремонт и дизайн",
+  "sub": "ремонт під ключ",
+  "city": "Україна",
+  "district": "—",
+  "tg": "remont_group",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/remont_group",
+  "hook": "Все о ремонте и современном дизайне.",
+  "lang": "RU",
+  "template": 10,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p003",
+  "niche": "repair",
+  "company": "Будівельні послуги & Ремонт/Львів",
+  "sub": "ремонт під ключ",
+  "city": "Львів",
+  "district": "—",
+  "tg": "lviv_bud",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/lviv_bud",
+  "hook": "Шукаєте надійних майстрів чи плануєте ремонт? Приєднуйтесь до нашої спільноти! 🏗️🔨 @Будівництво та ремонт — це завжди стрес, якщо немає…",
+  "lang": "UA",
+  "template": 11,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p004",
+  "niche": "repair",
+  "company": "Одеса Будівництво + Робота",
+  "sub": "ремонт під ключ",
+  "city": "Одеса",
+  "district": "—",
+  "tg": "odesa_bud",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/odesa_bud",
+  "hook": "You can view and join @odesa_bud right away.",
+  "lang": "UA",
+  "template": 12,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p005",
+  "niche": "book",
+  "company": "уборка, химчистка мебели, дезинфекция/дезинсекция",
+  "sub": "хімчистка / клінінг",
+  "city": "Україна",
+  "district": "—",
+  "tg": "chistohome",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/chistohome",
+  "hook": "Помогаем сохранить или создать порядок и чистоту в домах, офисах и квартирах",
+  "lang": "RU",
+  "template": 5,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p006",
+  "niche": "repair",
+  "company": "Ukraine bud",
+  "sub": "ремонт під ключ",
+  "city": "Україна",
+  "district": "—",
+  "tg": "ukraine_bud",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/ukraine_bud",
+  "hook": "Ласкаво просимо до спільноти \"Ukraine_bud\"! Завдяки цьому простору, ви зможете розширити свої горизонти в сфері будівництва та знайти нові…",
+  "lang": "UA",
+  "template": 14,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p007",
+  "niche": "repair",
+  "company": "Ремонт в Харькове 🏗🏪🏠",
+  "sub": "ремонт під ключ",
+  "city": "Харків",
+  "district": "—",
+  "tg": "remont_kvartir_kharkiv",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/remont_kvartir_kharkiv",
+  "hook": "Ремонт квартир, домов и офисов в Харькове. Все виды ремонтно-строительных работ. Составление сметы. Гарантия. тел.+38 (073) 829-90-56 сайт:",
+  "lang": "RU",
+  "template": 15,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p008",
+  "niche": "book",
+  "company": "cleaning company",
+  "sub": "клінінг",
+  "city": "Україна",
+  "district": "—",
+  "tg": "cleaning_company",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/cleaning_company",
+  "hook": "You can view and join @cleaning_company right away.",
+  "lang": "RU",
+  "template": 8,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p009",
+  "niche": "repair",
+  "company": "РЕМОНТ КВАРТИР ХАРЬКОВ",
+  "sub": "ремонт під ключ",
+  "city": "Харків",
+  "district": "—",
+  "tg": "remontkvartirgroup",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/remontkvartirgroup",
+  "hook": "🏗 Экономия на материалах ✍🏾 просчёт стоимости «БЕСПЛАТНО»",
+  "lang": "RU",
+  "template": 9,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p010",
+  "niche": "repair",
+  "company": "Будівництво | Ремонт | Інтерʼєр",
+  "sub": "ремонт під ключ",
+  "city": "Україна",
+  "district": "—",
+  "tg": "remontpro_ua",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/remontpro_ua",
+  "hook": "Україномовний канал про будівництво, ремонт та інтерʼєр. Підписуйся, щоб не пропустити дизайн оселі твоєї мрії. Автоматичний прийом підписників до…",
+  "lang": "UA",
+  "template": 10,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p011",
+  "niche": "repair",
+  "company": "Студия Ремонта – «Технология»",
+  "sub": "ремонт під ключ",
+  "city": "Україна",
+  "district": "—",
+  "tg": "repairstudio",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/repairstudio",
+  "hook": "You can view and join @repairstudio right away.",
+  "lang": "RU",
+  "template": 11,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p012",
+  "niche": "repair",
+  "company": "Ремонт",
+  "sub": "ремонт під ключ",
+  "city": "Україна",
+  "district": "—",
+  "tg": "remontkvartirpro",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/remontkvartirpro",
+  "hook": "You can view and join @remontkvartirpro right away.",
+  "lang": "RU",
+  "template": 12,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p013",
+  "niche": "book",
+  "company": "Клінінг",
+  "sub": "клінінг",
+  "city": "Україна",
+  "district": "—",
+  "tg": "cleaninglviv",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/cleaninglviv",
+  "hook": "Прибирання. Чистота Вашої оселі та місця праці - запорука Вашого здоров'я та довголіття !!!",
+  "lang": "UA",
+  "template": 5,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p014",
+  "niche": "repair",
+  "company": "Мастер Дела",
+  "sub": "ремонт під ключ",
+  "city": "Україна",
+  "district": "—",
+  "tg": "mastermaster",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/mastermaster",
+  "hook": "Строительство, ремесло, инженерные сети, IT, умный дом",
+  "lang": "RU",
+  "template": 14,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p015",
+  "niche": "repair",
+  "company": "Ремонт Київ 🇺🇦 Україна",
+  "sub": "ремонт під ключ",
+  "city": "Київ",
+  "district": "—",
+  "tg": "ua_remont",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/ua_remont",
+  "hook": "Будівництво, ремонт Київ, Україна. Замовлення та доставка будматеріалів.",
+  "lang": "UA",
+  "template": 15,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p016",
+  "niche": "repair",
+  "company": "Ремонт будинку з нуля",
+  "sub": "ремонт будинків",
+  "city": "Україна",
+  "district": "—",
+  "tg": "remont_ukraine",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/remont_ukraine",
+  "hook": "Канал для тих, хто займається ремонтом будинку з нуля. Корисна інформація про все, з чим зустрічається власник в процесі ремонту. Діломось…",
+  "lang": "UA",
+  "template": 16,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p017",
+  "niche": "book",
+  "company": "КЛІНІНГ LVIV",
+  "sub": "клінінг",
+  "city": "Львів",
+  "district": "—",
+  "tg": "cleaning_lviv",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/cleaning_lviv",
+  "hook": "You can view and join @cleaning_lviv right away.",
+  "lang": "UA",
+  "template": 1,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p018",
+  "niche": "repair",
+  "company": "Ремонт під ключ. Київ|Київська обл.",
+  "sub": "ремонт під ключ",
+  "city": "Київ",
+  "district": "—",
+  "tg": "repairkyiv",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/repairkyiv",
+  "hook": "You can view and join @repairkyiv right away.",
+  "lang": "UA",
+  "template": 10,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p019",
+  "niche": "repair",
+  "company": "Ремонт Квартир Строительство Киев💪💪💪",
+  "sub": "ремонт під ключ",
+  "city": "Київ",
+  "district": "—",
+  "tg": "remont_kvartir_kiev",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/remont_kvartir_kiev",
+  "hook": "Ремонт Квартир Строительство В Киеве и Области. 0681188255 , 0991188255 ,0930204748. Качество,самые адекватные цены !",
+  "lang": "RU",
+  "template": 11,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p020",
+  "niche": "repair",
+  "company": "Renovation home and office",
+  "sub": "ремонт під ключ",
+  "city": "Україна",
+  "district": "—",
+  "tg": "renovation_home",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/renovation_home",
+  "hook": "You can view and join @renovation_home right away.",
+  "lang": "RU",
+  "template": 12,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p021",
+  "niche": "book",
+  "company": "CleanTeam|Клінінг в Одесі|Прибирання квартир,офісів",
+  "sub": "клінінг офісів",
+  "city": "Одеса",
+  "district": "—",
+  "tg": "cleanodesa",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/cleanodesa",
+  "hook": "You can view and join @cleanodesa right away.",
+  "lang": "UA",
+  "template": 5,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p022",
+  "niche": "repair",
+  "company": "Ремонт квартир Киев",
+  "sub": "ремонт під ключ",
+  "city": "Київ",
+  "district": "—",
+  "tg": "remont_kvartir_kyiv",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/remont_kvartir_kyiv",
+  "hook": "You can view and join @remont_kvartir_kyiv right away.",
+  "lang": "RU",
+  "template": 14,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p023",
+  "niche": "repair",
+  "company": "Ремонт под ключ в Киеве",
+  "sub": "ремонт під ключ",
+  "city": "Київ",
+  "district": "—",
+  "tg": "remontkvartirkiev",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/remontkvartirkiev",
+  "hook": "Ремонт квартир под ключ в Киеве.",
+  "lang": "RU",
+  "template": 15,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p024",
+  "niche": "repair",
+  "company": "РемонтПроМастер",
+  "sub": "ремонт під ключ",
+  "city": "Україна",
+  "district": "—",
+  "tg": "remontpromaster",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/remontpromaster",
+  "hook": "You can view and join @remontpromaster right away.",
+  "lang": "RU",
+  "template": 16,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p025",
+  "niche": "book",
+  "company": "Фреш-сервис - Чистота и комфорт Вашего бизнеса!",
+  "sub": "клінінг",
+  "city": "Україна",
+  "district": "—",
+  "tg": "fresh_service",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/fresh_service",
+  "hook": "Чистота - залог здоровья и успешношности Вашего бизнеса! 🌊 здесь вы найдете всё для создания безупречной чистоты - от товаров до услуг! 🌊 мы…",
+  "lang": "RU",
+  "template": 1,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p026",
+  "niche": "book",
+  "company": "cleaning_ua ✨🧹🪣",
+  "sub": "клінінг",
+  "city": "Україна",
+  "district": "—",
+  "tg": "chisto_ua",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/chisto_ua",
+  "hook": "💫Канал по пошуку клінгових компаній 🧼🪣🪠 ☝️У цьому каналі ви зможете знайти клінінгові компанії України.",
+  "lang": "UA",
+  "template": 2,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p027",
+  "niche": "book",
+  "company": "clean_home",
+  "sub": "клінінг",
+  "city": "Україна",
+  "district": "—",
+  "tg": "clean_home",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/clean_home",
+  "hook": "用户名出售 🤵🏻 @NFTStore",
+  "lang": "RU",
+  "template": 3,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p028",
+  "niche": "book",
+  "company": "Professional Cleaners",
+  "sub": "клінінг",
+  "city": "Україна",
+  "district": "—",
+  "tg": "cleangroup",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/cleangroup",
+  "hook": "A group made for people in the cleaning industry,clean enthusiasts and like minds to share tips,hacks and experiences.",
+  "lang": "RU",
+  "template": 4,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p029",
+  "niche": "book",
+  "company": "Клінінг Україна",
+  "sub": "клінінг",
+  "city": "Україна",
+  "district": "—",
+  "tg": "cleaning_ukraine",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/cleaning_ukraine",
+  "hook": "You can view and join @cleaning_ukraine right away.",
+  "lang": "UA",
+  "template": 5,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p030",
+  "niche": "book",
+  "company": "ECOCLEAN NEWS",
+  "sub": "клінінг",
+  "city": "Україна",
+  "district": "—",
+  "tg": "ecocleancompany",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/ecocleancompany",
+  "hook": "You can view and join @ecocleancompany right away.",
+  "lang": "RU",
+  "template": 6,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p031",
+  "niche": "book",
+  "company": "Химчистка мебели",
+  "sub": "хімчистка / клінінг",
+  "city": "Україна",
+  "district": "—",
+  "tg": "ecocleanhome",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/ecocleanhome",
+  "hook": "You can view and join @ecocleanhome right away.",
+  "lang": "RU",
+  "template": 7,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p032",
+  "niche": "repair",
+  "company": "Renovation home 👍👍👍",
+  "sub": "ремонт під ключ",
+  "city": "Україна",
+  "district": "—",
+  "tg": "renovationhome",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/renovationhome",
+  "hook": "Reggo boleh bincang...",
+  "lang": "RU",
+  "template": 16,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p033",
+  "niche": "book",
+  "company": "Бриолин Клининговая компания",
+  "sub": "клінінг",
+  "city": "Україна",
+  "district": "—",
+  "tg": "briolin_klining_Donetsk",
+  "src": "поиск",
+  "srcUrl": "https://t.me/briolin_klining_Donetsk",
+  "hook": "Качественный клининг в Донецке и Мариуполе",
+  "lang": "RU",
+  "template": 1,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p034",
+  "niche": "book",
+  "company": "Студия-Чистоты",
+  "sub": "клінінг",
+  "city": "Україна",
+  "district": "—",
+  "tg": "clean_studio",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/clean_studio",
+  "hook": "🧹Пpoфеcсионaльный клининг в Йoшкaр-Oле и Mаpий Эл.",
+  "lang": "RU",
+  "template": 2,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p035",
+  "niche": "book",
+  "company": "CLEANHOUSE Cleaning Company",
+  "sub": "клінінг офісів",
+  "city": "Україна",
+  "district": "—",
+  "tg": "CLEANHOUSE_Kyiv",
+  "src": "поиск",
+  "srcUrl": "https://t.me/CLEANHOUSE_Kyiv",
+  "hook": "CLEANHOUSE — професійне прибирання квартир, будинків та офісів.",
+  "lang": "UA",
+  "template": 3,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p036",
+  "niche": "book",
+  "company": "Clean House Lviv — «Чистий дім Львів» 🏠✨",
+  "sub": "клінінг",
+  "city": "Львів",
+  "district": "—",
+  "tg": "cleanhouse_lviv",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/cleanhouse_lviv",
+  "hook": "You can contact @cleanhouse_lviv right away.",
+  "lang": "UA",
+  "template": 4,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p037",
+  "niche": "book",
+  "company": "КЛІНІНГ CLEAN_CLIN",
+  "sub": "клінінг",
+  "city": "Львів",
+  "district": "—",
+  "tg": "cliningcleanclin",
+  "src": "поиск",
+  "srcUrl": "https://t.me/cliningcleanclin",
+  "hook": "Клінінгова компанія \"CLEAN_CLIN\" Львів та область",
+  "lang": "UA",
+  "template": 5,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p038",
+  "niche": "book",
+  "company": "Ideal Cleaning",
+  "sub": "клінінг",
+  "city": "Україна",
+  "district": "—",
+  "tg": "idealcleaning_kyiv",
+  "src": "поиск",
+  "srcUrl": "https://t.me/idealcleaning_kyiv",
+  "hook": "✨Професійний клінінг у Києві та області✨ -10% на перше замовлення!",
+  "lang": "UA",
+  "template": 6,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p039",
+  "niche": "book",
+  "company": "Регион Клининг",
+  "sub": "клінінг",
+  "city": "Україна",
+  "district": "—",
+  "tg": "regionshte",
+  "src": "поиск",
+  "srcUrl": "https://t.me/regionshte",
+  "hook": "Уборка кафе, ресторанов, промышленных объектов, квартир и коттеджей.",
+  "lang": "RU",
+  "template": 7,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p040",
+  "niche": "book",
+  "company": "УХ Клінінг. Київ",
+  "sub": "хімчистка / клінінг",
+  "city": "Київ",
+  "district": "—",
+  "tg": "YxKliningKiev",
+  "src": "поиск",
+  "srcUrl": "https://t.me/YxKliningKiev",
+  "hook": "Клінінг, прибирання, хімчистка Київ і область",
+  "lang": "UA",
+  "template": 8,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p041",
+  "niche": "repair",
+  "company": "РЕМОНТ ТА БУДІВНИЦТВО",
+  "sub": "ремонт під ключ",
+  "city": "Україна",
+  "district": "—",
+  "tg": "budremkiev",
+  "src": "поиск",
+  "srcUrl": "https://t.me/budremkiev",
+  "hook": "Послуги та пропозиції від фахівців у сфері ремонту та будівництва в місті Києві, а також пошук фахівців работодавцями",
+  "lang": "UA",
+  "template": 9,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p042",
+  "niche": "repair",
+  "company": "Ремонт квартир Львів - General Repairs",
+  "sub": "ремонт будинків",
+  "city": "Львів",
+  "district": "—",
+  "tg": "generalrepairslviv",
+  "src": "поиск",
+  "srcUrl": "https://t.me/generalrepairslviv",
+  "hook": "🔸 Ремонт квартир, будинків, офісів та комерцій 🔸 Знижки на матеріали до 25% 🔸 Бережемо ваш час та кошти 📲 0635265512",
+  "lang": "UA",
+  "template": 10,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p043",
+  "niche": "repair",
+  "company": "Service_Master_Kharkiv",
+  "sub": "ремонт під ключ",
+  "city": "Харків",
+  "district": "—",
+  "tg": "master_kharkiv",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/master_kharkiv",
+  "hook": "Ремонт, установка, чистка пральних машин та бойлерів",
+  "lang": "UA",
+  "template": 11,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p044",
+  "niche": "repair",
+  "company": "RemStroyCom Ремонты Под Ключ",
+  "sub": "ремонт під ключ",
+  "city": "Україна",
+  "district": "—",
+  "tg": "rembudcom",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/rembudcom",
+  "hook": "You can contact @rembudcom right away.",
+  "lang": "RU",
+  "template": 12,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p045",
+  "niche": "repair",
+  "company": "Ремонт квартир",
+  "sub": "ремонт під ключ",
+  "city": "Україна",
+  "district": "—",
+  "tg": "remont_kvartir_com",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/remont_kvartir_com",
+  "hook": "Мы,команда творческих людей: архитектор, дизайнер-интерьера, декоратор, специалисты в области ремонтно-отделочных работ. Каждый день мы создаём…",
+  "lang": "RU",
+  "template": 13,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p046",
+  "niche": "repair",
+  "company": "Процесс ремонта",
+  "sub": "ремонт під ключ",
+  "city": "Україна",
+  "district": "—",
+  "tg": "remont_kvartir_pro",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/remont_kvartir_pro",
+  "hook": "You can view and join @remont_kvartir_pro right away.",
+  "lang": "RU",
+  "template": 14,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p047",
+  "niche": "repair",
+  "company": "Ремонт квартир",
+  "sub": "ремонт під ключ",
+  "city": "Україна",
+  "district": "—",
+  "tg": "remont_kvartir_ua",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/remont_kvartir_ua",
+  "hook": "You can view and join @remont_kvartir_ua right away.",
+  "lang": "RU",
+  "template": 15,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p048",
+  "niche": "repair",
+  "company": "Бригада Ремонту",
+  "sub": "ремонт будинків",
+  "city": "Львів",
+  "district": "—",
+  "tg": "remont_lviv",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/remont_lviv",
+  "hook": "Бригада Ремонту Квартир у Львові. Здійснюємо ремонтні роботи у квартирі та будинку.Від А до Я. Нам вже понад 15 років як на ринку.",
+  "lang": "UA",
+  "template": 16,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p049",
+  "niche": "repair",
+  "company": "Ремонт",
+  "sub": "ремонт під ключ",
+  "city": "Харків",
+  "district": "—",
+  "tg": "remontkharkiv",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/remontkharkiv",
+  "hook": "You can view and join @remontkharkiv right away.",
+  "lang": "RU",
+  "template": 9,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p050",
+  "niche": "repair",
+  "company": "Ремонт квартир",
+  "sub": "ремонт під ключ",
+  "city": "Україна",
+  "district": "—",
+  "tg": "remontkvartir_bot",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/remontkvartir_bot",
+  "hook": "You can contact @remontkvartir_bot right away.",
+  "lang": "RU",
+  "template": 10,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p051",
+  "niche": "repair",
+  "company": "Клиентский Сервис 365 РК",
+  "sub": "ремонт під ключ",
+  "city": "Україна",
+  "district": "—",
+  "tg": "remontkvartir_service",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/remontkvartir_service",
+  "hook": "Экспертный ремонт квартир.",
+  "lang": "RU",
+  "template": 11,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p052",
+  "niche": "repair",
+  "company": "РЕМОНТ",
+  "sub": "ремонт під ключ",
+  "city": "Україна",
+  "district": "—",
+  "tg": "remontkvartirbot",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/remontkvartirbot",
+  "hook": "You can contact @remontkvartirbot right away.",
+  "lang": "RU",
+  "template": 12,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p053",
+  "niche": "repair",
+  "company": "РЕМОНТ КВАРТИРЫ",
+  "sub": "ремонт під ключ",
+  "city": "Україна",
+  "district": "—",
+  "tg": "remontkvartircom",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/remontkvartircom",
+  "hook": "You can view and join @remontkvartircom right away.",
+  "lang": "RU",
+  "template": 13,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p054",
+  "niche": "repair",
+  "company": "Ремонт квартир, домов, офисов",
+  "sub": "ремонт під ключ",
+  "city": "Одеса",
+  "district": "—",
+  "tg": "remontkvartirodesa",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/remontkvartirodesa",
+  "hook": "You can view and join @remontkvartirodesa right away.",
+  "lang": "RU",
+  "template": 14,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p055",
+  "niche": "repair",
+  "company": "\"НОВЫЙ\" ремонт квартир под ключ.",
+  "sub": "ремонт під ключ",
+  "city": "Україна",
+  "district": "—",
+  "tg": "remontpro",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/remontpro",
+  "hook": "Ремонт квартир под ключ. Дельные советы. #Тюмень",
+  "lang": "RU",
+  "template": 15,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ },
+ {
+  "id": "p056",
+  "niche": "repair",
+  "company": "Укладка плитки",
+  "sub": "ремонт під ключ",
+  "city": "Львів",
+  "district": "—",
+  "tg": "repair_lviv",
+  "src": "перебор ников",
+  "srcUrl": "https://t.me/repair_lviv",
+  "hook": "Львів",
+  "lang": "UA",
+  "template": 16,
+  "status": "new",
+  "touched": "",
+  "notes": ""
+ }
+];
 
   // ---------------- состояние ----------------
   const KEY = "tgbase.v1";
@@ -694,7 +1694,7 @@
           ${q.link ? `<a class="btn mini" target="_blank" rel="noopener" href="https://www.google.com/search?q=${encodeURIComponent(q.q)}">открыть</a>` : ""}
           <button class="btn ghost mini" data-copyq="${esc(q.q)}">копировать</button>
         </div>`).join("")}`;
-    $("#queries").innerHTML = block("book","Брони — салоны, барбершопы, мастера") + block("repair","Ремонты под ключ");
+    $("#queries").innerHTML = block("book","Клининг — уборка, химчистка, после ремонта") + block("repair","Ремонт квартир и домов под ключ");
   }
 
   // ---------------- композер ----------------
