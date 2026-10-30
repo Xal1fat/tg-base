@@ -1,0 +1,1042 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>База TG-контактов — брони и ремонты</title>
+<style>
+  :root{
+    --bg:#0A0F1A; --panel:#111A2B; --panel2:#0E1626; --line:rgba(255,255,255,.08);
+    --text:#E6EDF7; --muted:#8B9AB3; --book:#A78BFA; --rep:#FB923C; --ok:#22C55E;
+    --warn:#F59E0B; --bad:#EF4444; --radius:14px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:radial-gradient(1200px 700px at 15% -10%, #16204a 0%, transparent 60%),
+               radial-gradient(900px 600px at 100% 0%, #2a1a12 0%, transparent 55%), var(--bg);
+    color:var(--text); font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+    min-height:100vh; -webkit-text-size-adjust:100%;
+  }
+  a{color:inherit}
+  button{font:inherit; cursor:pointer}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 18px 80px}
+
+  /* ---------- шапка ---------- */
+  header.top{
+    display:flex; flex-wrap:wrap; gap:16px; align-items:center; justify-content:space-between;
+    padding:22px 0 14px;
+  }
+  .brand h1{font-size:20px; margin:0; letter-spacing:.2px}
+  .brand p{margin:3px 0 0; color:var(--muted); font-size:12.5px}
+  .stats{display:flex; gap:10px; flex-wrap:wrap}
+  .stat{
+    background:var(--panel); border:1px solid var(--line); border-radius:12px;
+    padding:8px 12px; min-width:74px; text-align:center;
+  }
+  .stat b{display:block; font-size:17px; line-height:1.1}
+  .stat span{font-size:10.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.6px}
+  .topActions{display:flex; gap:8px; flex-wrap:wrap}
+
+  .btn{
+    background:var(--panel); color:var(--text); border:1px solid var(--line);
+    border-radius:10px; padding:9px 13px; font-size:13px; transition:.15s; white-space:nowrap;
+  }
+  .btn:hover{border-color:rgba(255,255,255,.24); transform:translateY(-1px)}
+  .btn.primary{background:linear-gradient(135deg,#6D28D9,#A78BFA); border:none; color:#fff; font-weight:600}
+  .btn.ghost{background:transparent}
+  .btn.mini{padding:6px 10px; font-size:12px; border-radius:8px}
+  .btn.copy{background:rgba(167,139,250,.14); border-color:rgba(167,139,250,.35); color:#DDD6FE}
+  .btn.copy:hover{background:rgba(167,139,250,.24)}
+
+  /* ---------- табы ---------- */
+  nav.tabs{display:flex; gap:6px; border-bottom:1px solid var(--line); margin-bottom:18px; overflow-x:auto; overflow-y:hidden}
+  nav.tabs::-webkit-scrollbar{height:0; display:none}
+  nav.tabs{scrollbar-width:none}
+  nav.tabs button{
+    background:none; border:none; color:var(--muted); padding:11px 14px; font-size:13.5px;
+    border-bottom:2px solid transparent; margin-bottom:-1px; white-space:nowrap;
+  }
+  nav.tabs button[aria-selected="true"]{color:var(--text); border-bottom-color:var(--book)}
+
+  /* ---------- фильтры ---------- */
+  .filters{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:16px}
+  .chips{display:flex; gap:6px; flex-wrap:wrap}
+  .chip{
+    background:var(--panel); border:1px solid var(--line); color:var(--muted);
+    border-radius:999px; padding:7px 14px; font-size:12.5px;
+  }
+  .chip[aria-pressed="true"]{color:#fff; border-color:transparent}
+  .chip[data-niche="book"][aria-pressed="true"]{background:rgba(167,139,250,.22); border-color:rgba(167,139,250,.55); color:#EDE9FE}
+  .chip[data-niche="repair"][aria-pressed="true"]{background:rgba(251,146,60,.2); border-color:rgba(251,146,60,.55); color:#FFEDD5}
+  .chip[data-niche="all"][aria-pressed="true"]{background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.3)}
+  select,input[type=text],input[type=search],textarea{
+    background:var(--panel2); color:var(--text); border:1px solid var(--line);
+    border-radius:10px; padding:9px 11px; font:inherit; font-size:13.5px; outline:none;
+  }
+  select:focus,input:focus,textarea:focus{border-color:rgba(167,139,250,.6)}
+  input[type=search]{flex:1; min-width:180px}
+
+  /* ---------- карточки ---------- */
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:12px}
+  .card{
+    background:linear-gradient(180deg,var(--panel),var(--panel2)); border:1px solid var(--line);
+    border-radius:var(--radius); padding:14px; display:flex; flex-direction:column; gap:10px;
+    position:relative;
+  }
+  .card.book{border-left:3px solid var(--book)}
+  .card.repair{border-left:3px solid var(--rep)}
+  .card h3{margin:0; font-size:15.5px; line-height:1.3; padding-right:26px}
+  .card .row{display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+  .handle{
+    font-family:ui-monospace,SFMono-Regular,Consolas,monospace; font-size:12.5px;
+    background:rgba(255,255,255,.06); border-radius:7px; padding:4px 8px;
+  }
+  .meta{color:var(--muted); font-size:12px}
+  .hook{
+    font-size:12.5px; color:#C7D2E3; background:rgba(255,255,255,.035);
+    border-left:2px solid rgba(255,255,255,.15); padding:7px 10px; border-radius:0 8px 8px 0;
+  }
+  .card .actions{display:flex; gap:7px; flex-wrap:wrap; margin-top:auto}
+  .del{
+    position:absolute; top:8px; right:8px; background:none; border:none; color:#4B5A72;
+    font-size:16px; line-height:1; padding:4px 6px; border-radius:6px;
+  }
+  .del:hover{color:var(--bad); background:rgba(239,68,68,.12)}
+  .badge{font-size:11px; padding:3px 8px; border-radius:999px; border:1px solid var(--line)}
+  .badge.due{color:#FCA5A5; border-color:rgba(239,68,68,.4); background:rgba(239,68,68,.1)}
+  .badge.soon{color:#FCD34D; border-color:rgba(245,158,11,.4); background:rgba(245,158,11,.1)}
+  .badge.fresh{color:#86EFAC; border-color:rgba(34,197,94,.35); background:rgba(34,197,94,.1)}
+  select.status{padding:5px 8px; font-size:11.5px; border-radius:8px; max-width:150px}
+
+  /* ---------- модалки ---------- */
+  .modal{position:fixed; inset:0; background:rgba(3,7,14,.78); backdrop-filter:blur(3px);
+    display:flex; align-items:center; justify-content:center; padding:18px; z-index:50}
+  .modal[hidden]{display:none}
+  .sheet{
+    background:var(--panel); border:1px solid var(--line); border-radius:16px;
+    width:min(720px,100%); max-height:92vh; overflow:auto; padding:18px;
+    box-shadow:0 30px 80px rgba(0,0,0,.6);
+  }
+  .sheet h2{margin:0 0 4px; font-size:17px}
+  .sheet .sub{color:var(--muted); font-size:12.5px; margin-bottom:14px}
+  .sheet textarea{width:100%; min-height:230px; resize:vertical; line-height:1.55; font-size:13.5px}
+  .sheet .composer-actions{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px}
+  .warnline{color:#FCD34D; font-size:12px; margin-top:8px; min-height:16px}
+  .field{display:flex; flex-direction:column; gap:5px; margin-bottom:11px}
+  .field label{font-size:11.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px}
+  .two{display:grid; grid-template-columns:1fr 1fr; gap:11px}
+
+  /* ---------- шаблоны ---------- */
+  .tpl{background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:13px; margin-bottom:10px}
+  .tpl .head{display:flex; justify-content:space-between; gap:10px; align-items:start; margin-bottom:8px; flex-wrap:wrap}
+  .tpl .head b{font-size:13.5px}
+  .tpl .head span{color:var(--muted); font-size:11.5px}
+  .tpl .body{white-space:pre-wrap; font-size:13px; color:#D5DEEB; line-height:1.6}
+  .tpl .foot{display:flex; gap:8px; justify-content:flex-end; margin-top:10px; align-items:center}
+  .tpl .len{color:var(--muted); font-size:11px; margin-right:auto}
+
+  /* ---------- поиск ---------- */
+  .qrow{display:flex; gap:10px; align-items:center; padding:8px 0; border-bottom:1px dashed rgba(255,255,255,.07); flex-wrap:wrap}
+  .qrow code{font-family:ui-monospace,Consolas,monospace; font-size:12.5px; color:#C4B5FD}
+  .qrow .city{color:var(--muted); font-size:11.5px; min-width:64px}
+
+  /* ---------- гайд ---------- */
+  .guide h2{font-size:19px; margin:22px 0 8px}
+  .guide h3{font-size:14px; margin:18px 0 6px; color:#C4B5FD}
+  .guide p,.guide li{color:#C7D2E3; font-size:13.5px}
+  .guide ol,.guide ul{padding-left:20px; margin:6px 0}
+  .guide li{margin:4px 0}
+  .kbd{padding:1px 6px; border:1px solid var(--line); border-radius:5px; font-size:12px; background:rgba(255,255,255,.05)}
+
+  .empty{color:var(--muted); text-align:center; padding:40px 10px; font-size:13.5px}
+  .toast{
+    position:fixed; left:50%; bottom:26px; transform:translate(-50%,20px);
+    background:#132033; border:1px solid rgba(255,255,255,.16); color:#E6EDF7;
+    padding:11px 18px; border-radius:11px; font-size:13px; opacity:0; pointer-events:none;
+    transition:.22s; z-index:99; box-shadow:0 12px 30px rgba(0,0,0,.5);
+  }
+  .toast.show{opacity:1; transform:translate(-50%,0)}
+  footer.foot{color:#4A5A73; font-size:11.5px; text-align:center; padding:30px 0 10px}
+
+  @media (max-width:640px){
+    .wrap{padding:0 12px 70px}
+    .grid{grid-template-columns:1fr}
+    .two{grid-template-columns:1fr}
+    header.top{flex-direction:column; align-items:stretch; gap:12px}
+    .brand h1{font-size:17px}
+    .stats{display:grid; grid-template-columns:repeat(3,1fr); gap:8px; width:100%}
+    .stat{min-width:0; padding:7px 6px}
+    .stat b{font-size:15px}
+    .stat span{font-size:9.5px; letter-spacing:.3px}
+    .topActions{width:100%}
+    .filters{gap:8px}
+    .filters > *{max-width:100%}
+    #cityFilter,#statusFilter{flex:1 1 140px; min-width:0}
+    #q{flex:1 1 100%}
+    .sheet{max-height:100vh; border-radius:12px; padding:14px}
+    nav.tabs button{padding:10px 11px; font-size:12.5px}
+    .card h3{font-size:14.5px}
+  }
+  @media (max-width:420px){
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .stat span{font-size:9px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand">
+      <h1>База TG-контактов</h1>
+      <p>брони · салоны, барбершопы, мастера &nbsp;|&nbsp; ремонты под ключ</p>
+    </div>
+    <div class="stats" id="stats"></div>
+    <div class="topActions">
+      <button class="btn primary" id="btnAdd">+ Контакт</button>
+      <button class="btn" id="btnBulk">Массово</button>
+      <button class="btn ghost mini" id="btnExport">Экспорт</button>
+      <button class="btn ghost mini" id="btnImport">Импорт</button>
+      <input type="file" id="fileImport" accept="application/json" hidden>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" aria-selected="true"  data-tab="contacts">Контакты</button>
+    <button role="tab" aria-selected="false" data-tab="messages">Сообщения · 16</button>
+    <button role="tab" aria-selected="false" data-tab="search">Поиск контактов</button>
+    <button role="tab" aria-selected="false" data-tab="guide">Как писать</button>
+  </nav>
+
+  <!-- ================= КОНТАКТЫ ================= -->
+  <section id="tab-contacts">
+    <div class="filters">
+      <div class="chips" id="nicheChips">
+        <button class="chip" data-niche="all" aria-pressed="true">Все</button>
+        <button class="chip" data-niche="book" aria-pressed="false">Брони</button>
+        <button class="chip" data-niche="repair" aria-pressed="false">Ремонты</button>
+      </div>
+      <select id="cityFilter"><option value="">Все города</option></select>
+      <select id="statusFilter"><option value="">Все статусы</option></select>
+      <input type="search" id="q" placeholder="Поиск: название, @ник, район, заметка…">
+    </div>
+    <div id="contacts" class="grid"></div>
+    <div id="empty" class="empty" hidden>
+      Пусто. Нажми «+ Контакт», чтобы добавить первого, или открой «Поиск контактов» — там готовые запросы.
+    </div>
+  </section>
+
+  <!-- ================= СООБЩЕНИЯ ================= -->
+  <section id="tab-messages" hidden>
+    <div class="filters">
+      <div class="chips" id="tplChips">
+        <button class="chip" data-niche="all" aria-pressed="true">Все</button>
+        <button class="chip" data-niche="book" aria-pressed="false">Брони</button>
+        <button class="chip" data-niche="repair" aria-pressed="false">Ремонты</button>
+      </div>
+      <span class="meta">В шаблоне замени {название} · {район} · {источник} · {подниша}. Лучше всего — через карточку контакта: там подставится само.</span>
+    </div>
+    <div id="templates"></div>
+  </section>
+
+  <!-- ================= ПОИСК ================= -->
+  <section id="tab-search" hidden>
+    <div class="filters">
+      <span class="meta">Копируешь запрос — открываешь в Google — берёшь @username из профиля. Одна строка базы ≈ 40 секунд.</span>
+    </div>
+    <div id="queries"></div>
+  </section>
+
+  <!-- ================= ГАЙД ================= -->
+  <section id="tab-guide" hidden class="guide">
+    <h2>Правила, без которых база не работает</h2>
+    <ol>
+      <li><b>20–25 первых сообщений в день максимум.</b> Новый аккаунт — 5–10 в первые дни, иначе ограничение на отправку. Пиши с личного аккаунта: фото, имя, заполненное био.</li>
+      <li><b>Ссылку — не в первом сообщении.</b> Сначала вопрос про их ситуацию, ссылку после ответа. Это в 2–3 раза больше ответов.</li>
+      <li><b>Один и тот же текст подряд = спам.</b> Первые два предложения всегда свои: деталь, которую видно, только если реально открыл профиль.</li>
+      <li><b>Фоллоу-ап обязателен.</b> Через 3 дня и через 7 дней, коротко. 60–70% ответов приходит со второго касания.</li>
+      <li><b>Статус ставь сразу.</b> Отметка «Написал» включает таймер фоллоу-апа — сайт сам покажет, кому пора.</li>
+      <li><b>Норма:</b> из 100 сообщений отвечают 15–30, до демо доходит 5–10, оплата 1–3. Если ответов меньше 10 — проблема не в тексте, а в том, кому пишешь.</li>
+    </ol>
+
+    <h2>Как собрать контакты за вечер</h2>
+    <ol>
+      <li>Вкладка «Поиск» → запрос по своему городу → Google → 20–30 профилей t.me и Instagram.</li>
+      <li>Instagram: в био почти всегда t.me-ссылка. Открыл, скопировал ник, добавил.</li>
+      <li>Telegram: поиск «барбершоп Київ» → вкладка «Каналы» → bio → @username.</li>
+      <li>2GIS / Google Maps: у 30–40% заведений в контактах указан Telegram.</li>
+      <li>В карточке заполняй «хук» — одну конкретную деталь. Без неё сообщение читается как реклама.</li>
+    </ol>
+
+    <h2>Как работать с карточкой</h2>
+    <ul>
+      <li><span class="kbd">Написать в TG</span> — открывает чат в Telegram.</li>
+      <li><span class="kbd">Сообщение</span> — собирает текст: подставляет название, район, источник, нишу. Дальше «Другой заход» — соседний шаблон, чтобы не повторяться.</li>
+      <li><span class="kbd">Копировать</span> — текст в буфер. <span class="kbd">Ctrl+Enter</span> в окне сообщения делает то же.</li>
+      <li>Статус «Написал» ставит дату и включает напоминание о фоллоу-апе (+3 и +7 дней).</li>
+    </ul>
+
+    <h2>Легенда статусов</h2>
+    <ul>
+      <li><b>Новый</b> — контакт есть, сообщение не отправлено.</li>
+      <li><b>Написал</b> — ушло, ждём.</li>
+      <li><b>Прочитал</b> — молчит. Один короткий фоллоу-ап, не больше двух.</li>
+      <li><b>Ответил</b> — есть диалог, включая «сколько стоит».</li>
+      <li><b>Демо</b> — показал макет или пример, ждёшь решения.</li>
+      <li><b>Переговоры</b> — объём, сроки, предоплата.</li>
+      <li><b>Оплата</b> — сделка.</li>
+      <li><b>Отказ / Отложен</b> — «не сейчас» с датой = самый тёплый список через 2–3 месяца.</li>
+    </ul>
+
+    <h2>Данные</h2>
+    <p>Всё хранится в этом браузере (localStorage), никуда не уходит. Хочешь перенести на телефон или не потерять при чистке — «Экспорт» скачает JSON, «Импорт» загрузит его обратно.</p>
+    <p>Если открываешь файл на телефоне — сохрани его в «Файлы» и открывай в браузере; копирование и ссылки t.me работают так же.</p>
+  </section>
+
+  <footer class="foot">Локальная база · ничего не отправляется на сервер</footer>
+</div>
+
+<!-- ================= МОДАЛКА: СООБЩЕНИЕ ================= -->
+<div class="modal" id="composer" hidden>
+  <div class="sheet" role="dialog" aria-modal="true">
+    <h2 id="cTitle">Сообщение</h2>
+    <div class="sub" id="cSub"></div>
+    <div class="field">
+      <label for="cTemplate">Заход</label>
+      <select id="cTemplate"></select>
+    </div>
+    <textarea id="cText" spellcheck="false"></textarea>
+    <div class="warnline" id="cWarn"></div>
+    <div class="composer-actions">
+      <button class="btn primary" id="cCopy">Копировать</button>
+      <button class="btn" id="cCopyOpen">Копировать и открыть TG</button>
+      <button class="btn ghost" id="cShuffle">Другой заход</button>
+      <button class="btn ghost" id="cClose" style="margin-left:auto">Закрыть</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= МОДАЛКА: КОНТАКТ ================= -->
+<div class="modal" id="addDialog" hidden>
+  <div class="sheet" role="dialog" aria-modal="true">
+    <h2>Новый контакт</h2>
+    <div class="sub">Обязательно только название и ник. Остальное можно дозаполнить позже.</div>
+    <div class="two">
+      <div class="field"><label>Компания</label><input type="text" id="fCompany" placeholder="Барбершоп CORNER"></div>
+      <div class="field"><label>Ниша</label>
+        <select id="fNiche">
+          <option value="book">Брони — салон / барбершоп / мастер</option>
+          <option value="repair">Ремонты под ключ</option>
+        </select>
+      </div>
+    </div>
+    <div class="two">
+      <div class="field"><label>@username</label><input type="text" id="fTg" placeholder="cornerbarber"></div>
+      <div class="field"><label>Город</label>
+        <select id="fCity">
+          <option>Київ</option><option>Львів</option><option>Дніпро</option><option>Одеса</option><option>Харків</option><option>Інше</option>
+        </select>
+      </div>
+    </div>
+    <div class="two">
+      <div class="field"><label>Подниша</label><input type="text" id="fSub" placeholder="барбершоп"></div>
+      <div class="field"><label>Район / адрес</label><input type="text" id="fDistrict" placeholder="Позняки"></div>
+    </div>
+    <div class="field"><label>Хук — что заметил</label><input type="text" id="fHook" placeholder="канал без цен и адреса, сайта нет"></div>
+    <div class="two">
+      <div class="field"><label>Источник</label><input type="text" id="fSrc" placeholder="Google / Instagram / 2GIS"></div>
+      <div class="field"><label>Язык</label>
+        <select id="fLang"><option>UA</option><option>RU</option><option>EN</option></select>
+      </div>
+    </div>
+    <div class="composer-actions">
+      <button class="btn primary" id="fSave">Сохранить</button>
+      <button class="btn ghost" id="fCancel" style="margin-left:auto">Отмена</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= МОДАЛКА: МАССОВОЕ ДОБАВЛЕНИЕ ================= -->
+<div class="modal" id="bulkDialog" hidden>
+  <div class="sheet" role="dialog" aria-modal="true">
+    <h2>Добавить пачкой</h2>
+    <div class="sub">Одна строка = один контакт. Разделитель — <b>|</b> или табуляция. Порядок: название | @ник | город | район | хук. Хвост можно не заполнять.</div>
+    <div class="field"><label>Ниша для всех строк</label>
+      <select id="bulkNiche">
+        <option value="book">Брони — салоны / барбершопы / мастера</option>
+        <option value="repair">Ремонты под ключ</option>
+      </select>
+    </div>
+    <textarea id="bulkText" spellcheck="false" placeholder="Барбершоп CORNER | @CORNERbarbershopp | Київ | Троєщина | канал без цен и адреса
+Салон «Ольга» | @olga_beauty | Львів | Центр | запись только в директ
+@some_master"></textarea>
+    <div class="warnline" id="bulkWarn"></div>
+    <div class="composer-actions">
+      <button class="btn primary" id="bulkSave">Добавить</button>
+      <button class="btn ghost" id="bulkCancel" style="margin-left:auto">Отмена</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script>
+(function(){
+  "use strict";
+
+  // ---------------- данные ----------------
+  const NICHES = {
+    book:   {label:"Брони",   color:"var(--book)"},
+    repair: {label:"Ремонты", color:"var(--rep)"}
+  };
+
+  const STATUSES = [
+    ["new",     "Новый"],
+    ["wrote",   "Написал"],
+    ["read",    "Прочитал"],
+    ["replied", "Ответил"],
+    ["demo",    "Демо"],
+    ["talk",    "Переговоры"],
+    ["paid",    "Оплата"],
+    ["no",      "Отказ"],
+    ["later",   "Отложен"]
+  ];
+  const STATUS_LABEL = Object.fromEntries(STATUSES);
+
+  const CITIES = ["Київ","Львів","Дніпро","Одеса","Харків","Інше"];
+
+  const TEMPLATES = [
+    {n:1, niche:"book", angle:"Оффер + живое демо",
+     when:"Салон или барбершоп без сайта, но с активным Instagram",
+     text:"{название}, привет! Нашёл вас через {источник} — вы в {район}. Делаю сайты с онлайн-записью: клиент сам выбирает услугу, мастера и время, заявка сразу приходит вам в Telegram, без переписки.\n\nПример можно потыкать как клиент: https://beauty-studio-blue.vercel.app\n\nСкажите, у вас запись сейчас в директ или через администратора? Если интересно, соберу такой же на ваших услугах и ценах."},
+    {n:2, niche:"book", angle:"Наблюдение про директ",
+     when:"Запись только через директ или переписку",
+     text:"{название}, привет! Зашёл на ваш профиль: записаться можно только в директ, и админ отвечает руками. У салонов на это уходит 5–10 часов в неделю — обычно это время после закрытия.\n\nЯ делаю страницу записи, где клиент сам выбирает услугу, мастера и время. Заявка приходит в Telegram.\n\nСобрать макет на ваших услугах и ценах? Бесплатно, один день."},
+    {n:3, niche:"book", angle:"Аудит их сайта",
+     when:"Сайт есть, но старый, медленный или без записи",
+     text:"{название}, привет! Открыл ваш сайт с телефона: {наблюдение}. Это стоит заявок — человек уходит к тому, у кого проще записаться.\n\nЯ как раз собираю и чиню такие сайты под запись. Могу прислать 3 конкретные правки — без денег и без созвонов.\n\nПрислать?"},
+    {n:4, niche:"book", angle:"Только Instagram",
+     when:"Вся жизнь в соцсетях, ссылка ведёт в директ",
+     text:"{название}, привет! У вас весь трафик в Instagram, а в шапке — ссылка в директ. Кто не любит писать первым, просто уходит.\n\nСобираю страницу-визитку: прайс, мастера, галерея и запись. Одна ссылка, всё понятно за 10 секунд.\n\nПоказать пример в вашей нише?"},
+    {n:5, niche:"book", angle:"Сезон",
+     when:"За 4–6 недель до пика: декабрь, 8 марта, выпускной",
+     text:"{название}, привет! До {сезон} остаётся {N} недель — в это время запись обычно забита, а часть заявок теряется в переписке.\n\nДелаю сайт с записью и напоминаниями, чтобы клиент бронировал сам, в любое время.\n\nПоказать, как это работает у салонов в вашем городе?"},
+    {n:6, niche:"book", angle:"Вопрос про Google",
+     when:"Есть только соцсети, нет сайта",
+     text:"{название}, привет! Проверяли, что Google выдаёт по «{подниша} {район}»? Обычно в топе те, у кого есть сайт с ценами — не потому что лучше, а потому что их вообще можно найти.\n\nЯ делаю такие страницы для салонов и мастеров: структура под запросы, запись, заявки в Telegram.\n\nХотите, покажу, как выглядела бы ваша?"},
+    {n:7, niche:"book", angle:"Бесплатный макет",
+     when:"Холодная аудитория, длинный заход не сработает",
+     text:"{название}, привет! Я собираю сайты для бьюти-сферы. Предложение простое: сделаю макет главной страницы на ваших фото и услугах — бесплатно, за день.\n\nПонравится — обсудим запуск. Не понравится — макет останется у вас, без обязательств.\n\nСкинуть, когда будет готово?"},
+    {n:8, niche:"book", angle:"Частный мастер",
+     when:"Один мастер, без студии и администратора",
+     text:"{название}, привет! Вы работаете сами — и это плюс, но клиенту негде посмотреть прайс и записаться, кроме переписки.\n\nСобираю страницу для мастеров: услуги с ценами, галерея работ, форма записи с уведомлением в Telegram. Без подписок, сайт ваш навсегда.\n\nПоказать, как это выглядит?"},
+    {n:9, niche:"repair", angle:"Оффер + кейс в нише",
+     when:"Ремонт под ключ, есть Instagram или OLX",
+     text:"{название}, привет! Вы делаете ремонт под ключ — нашёл вас через {источник}. Я собираю сайты для ремонтников: объекты с фото и сроками вместо ленты, калькулятор бюджета, форма заявки в Telegram.\n\nПример в вашей нише: https://xal1fat.github.io/terra/\n\nСколько заявок в месяц вы получаете сейчас и откуда в основном?"},
+    {n:10, niche:"repair", angle:"Дорогой чек",
+     when:"Средний чек выше 300 тыс. грн",
+     text:"{название}, привет! Ремонт — дорогая покупка: клиент перед звонком сравнивает 5–6 подрядчиков в интернете. Если сайта нет, сравнивают только по соцсетям.\n\nСобираю сайт-портфолио: объекты с фото и метражом, цена за м², форма заявки в Telegram.\n\nПоказать, как это выглядело бы на ваших объектах?"},
+    {n:11, niche:"repair", angle:"Калькулятор смет",
+     when:"Много входящих «а сколько будет стоить»",
+     text:"{название}, привет! Половина заявок на ремонт — это «сколько будет стоить» без деталей. На такие уходит по 20–30 минут переписки, и половина не отвечает потом.\n\nДелаю сайт с калькулятором: клиент сам прикидывает порядок цены и оставляет заявку уже с площадью, типом ремонта и сроками.\n\nГлянуть пример?"},
+    {n:12, niche:"repair", angle:"Новостройки",
+     when:"Работают по новостройкам, сезон сдачи",
+     text:"{название}, привет! Сдаётся много новостроек, и люди ищут «ремонт под ключ» в поиске — пишут тем, кого нашли.\n\nДелаю сайты, которые находят по таким запросам: страницы под услуги и районы, форма заявки в Telegram.\n\nАктуально сейчас или у вас загрузка и так полная?"},
+    {n:13, niche:"repair", angle:"Аудит их сайта",
+     when:"Сайт есть, но без фото объектов, цен и формы",
+     text:"{название}, привет! Посмотрел ваш сайт: {наблюдение}. На ремонте такие вещи стоят 20–30% заявок — клиент не видит, за что платит, и уходит.\n\nМогу прислать короткий список правок — бесплатно, без созвонов и обязательств.\n\nПрислать?"},
+    {n:14, niche:"repair", angle:"Вопрос про Google",
+     when:"Только соцсети и сарафан",
+     text:"{название}, привет! Проверяли, что Google выдаёт по «ремонт квартир {район}»? В топе почти всегда сайты, а не профили в соцсетях — оттуда и идут заявки.\n\nСобираю именно такие сайты для ремонтников: структура под запросы, объекты, формы.\n\nПоказать, как выглядел бы ваш?"},
+    {n:15, niche:"repair", angle:"Бесплатный макет",
+     when:"Холодный контакт без зацепки",
+     text:"{название}, привет! Соберу макет страницы под ваши услуги: объекты, цена за м², форма заявки. Бесплатно, за день — чтобы вы просто увидели, как это может выглядеть.\n\nПонравится — обсудим запуск. Нет — макет останется у вас.\n\nСкинуть результат?"},
+    {n:16, niche:"repair", angle:"Бригада / прораб",
+     when:"Небольшая бригада без бренда",
+     text:"{название}, привет! Вы работаете бригадой, клиент ищет вас по отзывам — а показать объекты и цены негде, кроме ленты.\n\nДелаю сайт-визитку: 5–7 объектов, прайс, форма заявки в Telegram, ваш домен. Без подписок — заплатили один раз, сайт ваш.\n\nИнтересно посмотреть пример?"}
+  ];
+
+  const SEED = [
+    {id:"s1", niche:"book", company:"Perfect Beauty Group", sub:"салон краси", city:"Київ", district:"Позняки",
+     tg:"prfectbeautybot", src:"Сайт компании", srcUrl:"https://prfect.beauty/",
+     hook:"Есть бот записи, но нет сайта-каталога под Google — предложить сайт + запись через бота",
+     lang:"UA", template:1, status:"new", touched:"", notes:""},
+    {id:"s2", niche:"book", company:"Барбершоп CORNER", sub:"барбершоп", city:"Інше", district:"вул. Мира 43",
+     tg:"CORNERbarbershopp", src:"Google", srcUrl:"https://t.me/CORNERbarbershopp",
+     hook:"Только канал в ТГ, 57 подписчиков, сайта нет — первый кандидат на страницу с прайсом",
+     lang:"RU", template:2, status:"new", touched:"", notes:""},
+    {id:"s3", niche:"book", company:"LINA | BARBER", sub:"барбершоп", city:"Інше", district:"—",
+     tg:"linahair8", src:"Google", srcUrl:"https://t.me/linahair8",
+     hook:"Канал 89 подписчиков, ни города, ни цен — предложить визитку с прайсом и записью",
+     lang:"RU", template:2, status:"new", touched:"", notes:""},
+    {id:"s4", niche:"repair", company:"РЕМОНТ ТА БУДІВНИЦТВО (канал)", sub:"ремонт под ключ", city:"Київ", district:"—",
+     tg:"budremkiev", src:"Google", srcUrl:"https://t.me/budremkiev",
+     hook:"Канал 526 підписників, де замовники шукають майстрів — читати заявки й писати напряму",
+     lang:"UA", template:9, status:"new", touched:"", notes:""}
+  ];
+
+  // ---------------- состояние ----------------
+  const KEY = "tgbase.v1";
+  let state = {
+    contacts: [],
+    tab: "contacts",
+    filter: {niche:"all", city:"", status:"", q:""},
+    tplFilter: "all"
+  };
+
+  function load(){
+    try{
+      const raw = localStorage.getItem(KEY);
+      if(raw){
+        const saved = JSON.parse(raw);
+        if(Array.isArray(saved.contacts) && saved.contacts.length) state.contacts = saved.contacts;
+      }
+    }catch(e){ /* ignore */ }
+    if(!state.contacts.length) state.contacts = SEED.map(c=>Object.assign({}, c));
+  }
+  function save(){
+    try{ localStorage.setItem(KEY, JSON.stringify({contacts: state.contacts})); }catch(e){}
+  }
+
+  // ---------------- утилиты ----------------
+  const $ = (s, r)=> (r||document).querySelector(s);
+  const $$ = (s, r)=> Array.from((r||document).querySelectorAll(s));
+  function esc(s){
+    return String(s==null?"":s).replace(/[&<>"']/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+  }
+  function toast(msg){
+    const t = $("#toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(t._tm);
+    t._tm = setTimeout(()=> t.classList.remove("show"), 1900);
+  }
+  function slug(s){ return String(s||"").trim().replace(/^@/,""); }
+  function todayISO(){
+    const d = new Date();
+    return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+  }
+  function daysBetween(a, b){
+    const d1 = new Date(a + "T00:00:00"), d2 = new Date(b + "T00:00:00");
+    return Math.round((d2 - d1) / 86400000);
+  }
+
+  async function copyText(text){
+    try{
+      if(navigator.clipboard && window.isSecureContext){
+        await navigator.clipboard.writeText(text);
+        return true;
+      }
+    }catch(e){}
+    // запасной путь для file:// и старых браузеров
+    try{
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly","");
+      ta.style.position = "fixed";
+      ta.style.top = "-1000px";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      ta.setSelectionRange(0, text.length);
+      const ok = document.execCommand("copy");
+      document.body.removeChild(ta);
+      return ok;
+    }catch(e){ return false; }
+  }
+
+  function tgUrl(c){ return "https://t.me/" + encodeURIComponent(slug(c.tg)); }
+
+  // ---------------- подстановка ----------------
+  function fillTemplate(text, c){
+    const src = (c.src && c.src.trim()) ? c.src.trim().toLowerCase() : "поиска";
+    return text
+      .replace(/\{название\}/g, c.company || "")
+      .replace(/\{район\}/g, c.district && c.district !== "—" ? c.district : c.city || "")
+      .replace(/\{источник\}/g, src)
+      .replace(/\{подниша\}/g, (c.sub || NICHES[c.niche].label).toLowerCase());
+  }
+  function leftovers(text){
+    const m = text.match(/\{[^}]+\}/g);
+    return m ? Array.from(new Set(m)) : [];
+  }
+
+  // ---------------- статистика ----------------
+  function renderStats(){
+    const total = state.contacts.length;
+    const wrote = state.contacts.filter(c=>c.status!=="new").length;
+    const replied = state.contacts.filter(c=>["replied","demo","talk","paid"].includes(c.status)).length;
+    const paid = state.contacts.filter(c=>c.status==="paid").length;
+    const due = state.contacts.filter(c=>{
+      if(!c.touched) return false;
+      if(["paid","no","later"].includes(c.status)) return false;
+      const d = daysBetween(c.touched, todayISO());
+      return d >= 3;
+    }).length;
+    const box = [
+      ["в базе", total], ["написано", wrote], ["ответили", replied], ["оплата", paid], ["пора писать", due]
+    ];
+    $("#stats").innerHTML = box.map(([l,v])=>`<div class="stat"><b>${v}</b><span>${l}</span></div>`).join("");
+  }
+
+  // ---------------- контакты ----------------
+  function followUpBadge(c){
+    if(!c.touched) return "";
+    if(["paid","no","later"].includes(c.status)) return "";
+    const d = daysBetween(c.touched, todayISO());
+    if(d >= 7) return `<span class="badge due">фоллоу-ап ${d} дн.</span>`;
+    if(d >= 3) return `<span class="badge soon">фоллоу-ап сегодня</span>`;
+    return `<span class="badge fresh">ждём · ${d} дн.</span>`;
+  }
+
+  function contactCard(c){
+    const statusOptions = STATUSES.map(([v,l])=>`<option value="${v}"${c.status===v?" selected":""}>${l}</option>`).join("");
+    const handle = c.tg ? "@" + esc(slug(c.tg)) : "нет ника";
+    return `
+    <article class="card ${c.niche}" data-id="${esc(c.id)}">
+      <button class="del" title="Удалить" data-del="${esc(c.id)}">×</button>
+      <div class="row">
+        <select class="status" data-status="${esc(c.id)}">${statusOptions}</select>
+        ${followUpBadge(c)}
+      </div>
+      <h3>${esc(c.company || "Без названия")}</h3>
+      <div class="row">
+        <span class="handle">${handle}</span>
+        ${c.tg ? `<button class="btn mini" data-copynick="${esc(c.id)}">копировать ник</button>` : ""}
+      </div>
+      <div class="meta">${esc(NICHES[c.niche].label)}${c.sub ? " · " + esc(c.sub) : ""} · ${esc(c.city || "—")}${c.district && c.district!=="—" ? " · " + esc(c.district) : ""}</div>
+      ${c.hook ? `<div class="hook">${esc(c.hook)}</div>` : ""}
+      <div class="actions">
+        ${c.tg ? `<a class="btn primary mini" href="${tgUrl(c)}" target="_blank" rel="noopener">Написать в TG</a>` : ""}
+        <button class="btn copy mini" data-compose="${esc(c.id)}">Сообщение</button>
+        <button class="btn ghost mini" data-edit="${esc(c.id)}">Изменить</button>
+      </div>
+    </article>`;
+  }
+
+  function visibleContacts(){
+    const f = state.filter;
+    const q = f.q.trim().toLowerCase();
+    return state.contacts.filter(c=>{
+      if(f.niche !== "all" && c.niche !== f.niche) return false;
+      if(f.city && c.city !== f.city) return false;
+      if(f.status && c.status !== f.status) return false;
+      if(!q) return true;
+      const hay = [c.company,c.sub,c.city,c.district,c.tg,c.hook,c.notes,c.src].join(" ").toLowerCase();
+      return hay.includes(q);
+    });
+  }
+
+  function renderContacts(){
+    const list = visibleContacts();
+    $("#contacts").innerHTML = list.map(contactCard).join("");
+    $("#empty").hidden = list.length > 0;
+    $("#empty").textContent = state.contacts.length
+      ? "Под фильтр ничего не подошло. Сбрось город или статус."
+      : "Пусто. Нажми «+ Контакт», чтобы добавить первого, или открой «Поиск контактов» — там готовые запросы.";
+    renderStats();
+  }
+
+  // ---------------- шаблоны ----------------
+  function renderTemplates(){
+    const list = TEMPLATES.filter(t=> state.tplFilter==="all" || t.niche===state.tplFilter);
+    $("#templates").innerHTML = list.map(t=>`
+      <div class="tpl">
+        <div class="head">
+          <div><b>${t.n}. ${esc(t.angle)}</b><br><span>${esc(NICHES[t.niche].label)} · ${esc(t.when)}</span></div>
+        </div>
+        <div class="body">${esc(t.text)}</div>
+        <div class="foot">
+          <span class="len">${t.text.length} символов</span>
+          <button class="btn copy mini" data-copytpl="${t.n}">Копировать</button>
+        </div>
+      </div>`).join("");
+  }
+
+  // ---------------- поиск ----------------
+  function buildQueries(){
+    const cities = ["Київ","Львів","Дніпро","Одеса","Харків"];
+    const bookSubs = ["барбершоп","салон краси","манікюр","косметологія","брови ресниці"];
+    const repSubs  = ["ремонт квартир","ремонт під ключ","санвузол ремонт","кухня ремонт","електрика квартира"];
+    const out = [];
+    cities.forEach(city=>{
+      bookSubs.forEach(s=> out.push({niche:"book", city, q:`site:t.me ${city} ${s}`, link:true}));
+      repSubs.forEach(s=> out.push({niche:"repair", city, q:`site:t.me ${city} ${s}`, link:true}));
+    });
+    const extra = [
+      ["book","Instagram",'site:instagram.com "барбершоп" "Київ"',false],
+      ["book","Instagram",'site:instagram.com "салон краси" "Львів"',false],
+      ["book","Google",'"онлайн-запис" салон бот telegram',false],
+      ["book","Telegram","в поиске ТГ: «барбершоп Київ» → Каналы → bio",false],
+      ["book","Telegram","в поиске ТГ: «салон краси» + свой город → bio",false],
+      ["book","2GIS","2gis.com.ua → салон краси → контакты → Telegram",false],
+      ["repair","Instagram",'site:instagram.com "ремонт квартир" "Київ"',false],
+      ["repair","Google",'"ремонт під ключ" кошторис telegram',false],
+      ["repair","OLX","site:olx.ua ремонт квартир під ключ",false],
+      ["repair","Telegram","в поиске ТГ: «ремонт квартир Київ» → Каналы → bio",false],
+      ["repair","2GIS","2gis.com.ua → ремонт квартир → контакты → Telegram",false]
+    ];
+    extra.forEach(([niche, city, q, link])=> out.push({niche, city, q, link}));
+    return out;
+  }
+
+  function renderQueries(){
+    const qs = buildQueries();
+    const groups = {book:[], repair:[]};
+    qs.forEach(q=> groups[q.niche].push(q));
+    const block = (niche, title) => `
+      <h3 style="margin:18px 0 8px;font-size:14px;color:${NICHES[niche].color}">${title}</h3>
+      ${groups[niche].map(q=>`
+        <div class="qrow">
+          <span class="city">${esc(q.city)}</span>
+          <code>${esc(q.q)}</code>
+          ${q.link ? `<a class="btn mini" target="_blank" rel="noopener" href="https://www.google.com/search?q=${encodeURIComponent(q.q)}">открыть</a>` : ""}
+          <button class="btn ghost mini" data-copyq="${esc(q.q)}">копировать</button>
+        </div>`).join("")}`;
+    $("#queries").innerHTML = block("book","Брони — салоны, барбершопы, мастера") + block("repair","Ремонты под ключ");
+  }
+
+  // ---------------- композер ----------------
+  let composerCtx = {contactId:null, tplN:1};
+
+  function openComposer(contactId, tplN){
+    const c = state.contacts.find(x=>x.id===contactId);
+    if(!c) return;
+    composerCtx.contactId = contactId;
+    const own = TEMPLATES.filter(t=>t.niche===c.niche);
+    let n = tplN || c.template || own[0].n;
+    if(!own.some(t=>t.n===n)) n = own[0].n;
+    composerCtx.tplN = n;
+
+    $("#cTitle").textContent = c.company || "Сообщение";
+    $("#cSub").textContent = `${NICHES[c.niche].label}${c.sub?" · "+c.sub:""} · ${c.city||"—"}${c.district&&c.district!=="—"?" · "+c.district:""}${c.tg?" · @"+slug(c.tg):""}`;
+
+    $("#cTemplate").innerHTML = own.map(t=>`<option value="${t.n}"${t.n===n?" selected":""}>${t.n}. ${esc(t.angle)}</option>`).join("");
+    $("#cTemplate").value = String(n);
+    applyTemplate();
+    $("#composer").hidden = false;
+    setTimeout(()=> $("#cText").focus(), 30);
+  }
+
+  function applyTemplate(){
+    const c = state.contacts.find(x=>x.id===composerCtx.contactId);
+    if(!c) return;
+    const tpl = TEMPLATES.find(t=>t.n===Number(composerCtx.tplN));
+    if(!tpl) return;
+    const text = fillTemplate(tpl.text, c);
+    $("#cText").value = text;
+    const rest = leftovers(text);
+    $("#cWarn").textContent = rest.length
+      ? "Осталось заменить вручную: " + rest.join(" ")
+      : `Готово · ${text.length} символов`;
+    $("#cWarn").style.color = rest.length ? "#FCD34D" : "#86EFAC";
+  }
+
+  function shuffleTemplate(){
+    const c = state.contacts.find(x=>x.id===composerCtx.contactId);
+    const own = TEMPLATES.filter(t=>t.niche===c.niche);
+    const idx = own.findIndex(t=>t.n===Number(composerCtx.tplN));
+    const next = own[(idx+1) % own.length];
+    composerCtx.tplN = next.n;
+    $("#cTemplate").value = String(next.n);
+    applyTemplate();
+  }
+
+  function markWrote(id){
+    const c = state.contacts.find(x=>x.id===id);
+    if(!c) return;
+    if(!c.touched) c.touched = todayISO();
+    if(c.status === "new") c.status = "wrote";
+    save();
+    renderContacts();
+  }
+
+  // ---------------- модалка контакта ----------------
+  let editingId = null;
+
+  function openAdd(id){
+    editingId = id || null;
+    const c = id ? state.contacts.find(x=>x.id===id) : null;
+    $(".sheet h2", $("#addDialog")).textContent = c ? "Изменить контакт" : "Новый контакт";
+    $("#fCompany").value = c ? c.company : "";
+    $("#fNiche").value = c ? c.niche : "book";
+    $("#fTg").value = c ? c.tg : "";
+    $("#fCity").value = c && CITIES.includes(c.city) ? c.city : "Київ";
+    $("#fSub").value = c ? c.sub : "";
+    $("#fDistrict").value = c ? c.district : "";
+    $("#fHook").value = c ? c.hook : "";
+    $("#fSrc").value = c ? c.src : "Google";
+    $("#fLang").value = c ? c.lang : "UA";
+    $("#addDialog").hidden = false;
+    setTimeout(()=> $("#fCompany").focus(), 30);
+  }
+
+  function saveContact(){
+    const company = $("#fCompany").value.trim();
+    const tg = slug($("#fTg").value);
+    if(!company && !tg){ toast("Нужно название или @username"); return; }
+    const data = {
+      company: company || ("@" + tg),
+      niche: $("#fNiche").value,
+      tg,
+      city: $("#fCity").value,
+      sub: $("#fSub").value.trim(),
+      district: $("#fDistrict").value.trim() || "—",
+      hook: $("#fHook").value.trim(),
+      src: $("#fSrc").value.trim() || "Google",
+      lang: $("#fLang").value
+    };
+    if(editingId){
+      const c = state.contacts.find(x=>x.id===editingId);
+      Object.assign(c, data);
+    } else {
+      const tpl = TEMPLATES.find(t=>t.niche===data.niche);
+      state.contacts.unshift(Object.assign({
+        id: "c" + Date.now(), srcUrl:"", template: tpl ? tpl.n : 1,
+        status:"new", touched:"", notes:""
+      }, data));
+    }
+    save();
+    $("#addDialog").hidden = true;
+    renderContacts();
+    toast(editingId ? "Сохранено" : "Контакт добавлен");
+    editingId = null;
+  }
+
+  // ---------------- массовое добавление ----------------
+  function parseBulk(text, niche){
+    const rows = [];
+    String(text).split(/\r?\n/).forEach(line=>{
+      const raw = line.trim();
+      if(!raw) return;
+      const parts = raw.split(/\s*\|\s*|\t+/).map(s=>s.trim()).filter((s,i)=> i===0 || s.length>0);
+      let company = parts[0] || "";
+      let tg = "", city = "Київ", district = "—", hook = "";
+      if(parts.length === 1){
+        if(/^@?[a-zA-Z0-9_]{4,}$/.test(company.replace(/^@/,""))){
+          tg = slug(company); company = "@" + tg;
+        }
+      } else {
+        tg = slug(parts[1] || "");
+        city = parts[2] || "Київ";
+        district = parts[3] || "—";
+        hook = parts[4] || "";
+      }
+      if(!company && !tg) return;
+      rows.push({company: company || ("@" + tg), tg, city, district, hook, niche});
+    });
+    return rows;
+  }
+
+  function bulkSave(){
+    const niche = $("#bulkNiche").value;
+    const rows = parseBulk($("#bulkText").value, niche);
+    if(!rows.length){ toast("Не нашёл ни одной строки"); return; }
+    const known = new Set(state.contacts.map(c=>slug(c.tg).toLowerCase()).filter(Boolean));
+    let added = 0, skipped = 0;
+    rows.forEach(r=>{
+      const key = slug(r.tg).toLowerCase();
+      if(key && known.has(key)){ skipped++; return; }
+      if(key) known.add(key);
+      const tpl = TEMPLATES.find(t=>t.niche===niche);
+      state.contacts.unshift(Object.assign({
+        id:"b"+Date.now()+Math.random().toString(36).slice(2,6),
+        sub:"", lang:"UA", src:"Массово", srcUrl:"", template: tpl ? tpl.n : 1,
+        status:"new", touched:"", notes:""
+      }, r));
+      added++;
+    });
+    save();
+    $("#bulkDialog").hidden = true;
+    $("#bulkText").value = "";
+    renderContacts();
+    toast("Добавлено: " + added + (skipped ? " · дублей пропущено: " + skipped : ""));
+  }
+
+  // ---------------- экспорт / импорт ----------------
+  function exportJSON(){
+    const blob = new Blob([JSON.stringify({version:1, exported:new Date().toISOString(), contacts: state.contacts}, null, 2)],
+      {type:"application/json"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "tg-base-" + todayISO() + ".json";
+    a.click();
+    setTimeout(()=> URL.revokeObjectURL(a.href), 2000);
+    toast("Файл сохранён");
+  }
+
+  function importJSON(file){
+    const fr = new FileReader();
+    fr.onload = ()=>{
+      try{
+        const data = JSON.parse(String(fr.result));
+        const arr = Array.isArray(data) ? data : data.contacts;
+        if(!Array.isArray(arr)) throw new Error("bad format");
+        const ids = new Set(state.contacts.map(c=>c.id));
+        let added = 0;
+        arr.forEach(c=>{
+          if(!c || !c.company) return;
+          if(c.id && ids.has(c.id)) return;
+          state.contacts.push(Object.assign({id:"i"+Date.now()+Math.random().toString(36).slice(2,6),
+            niche:"book", sub:"", city:"Київ", district:"—", tg:"", hook:"", src:"Импорт",
+            lang:"UA", template:1, status:"new", touched:"", notes:""}, c));
+          added++;
+        });
+        save(); renderContacts();
+        toast("Добавлено: " + added);
+      }catch(e){ toast("Не получилось прочитать файл"); }
+    };
+    fr.readAsText(file);
+  }
+
+  // ---------------- события ----------------
+  function bind(){
+    // табы
+    $$("nav.tabs button").forEach(b=>{
+      b.addEventListener("click", ()=>{
+        state.tab = b.dataset.tab;
+        $$("nav.tabs button").forEach(x=> x.setAttribute("aria-selected", String(x===b)));
+        ["contacts","messages","search","guide"].forEach(t=> $("#tab-"+t).hidden = (t !== state.tab));
+      });
+    });
+
+    // фильтры
+    $$("#nicheChips .chip").forEach(ch=>{
+      ch.addEventListener("click", ()=>{
+        state.filter.niche = ch.dataset.niche;
+        $$("#nicheChips .chip").forEach(x=> x.setAttribute("aria-pressed", String(x===ch)));
+        renderContacts();
+      });
+    });
+    $("#cityFilter").innerHTML = '<option value="">Все города</option>' + CITIES.map(c=>`<option>${c}</option>`).join("");
+    $("#statusFilter").innerHTML = '<option value="">Все статусы</option>' + STATUSES.map(([v,l])=>`<option value="${v}">${l}</option>`).join("");
+    $("#cityFilter").addEventListener("change", e=>{ state.filter.city = e.target.value; renderContacts(); });
+    $("#statusFilter").addEventListener("change", e=>{ state.filter.status = e.target.value; renderContacts(); });
+    $("#q").addEventListener("input", e=>{ state.filter.q = e.target.value; renderContacts(); });
+
+    // шаблоны: фильтр
+    $$("#tplChips .chip").forEach(ch=>{
+      ch.addEventListener("click", ()=>{
+        state.tplFilter = ch.dataset.niche;
+        $$("#tplChips .chip").forEach(x=> x.setAttribute("aria-pressed", String(x===ch)));
+        renderTemplates();
+      });
+    });
+
+    // делегирование кликов
+    document.addEventListener("click", async (e)=>{
+      const t = e.target.closest("[data-del],[data-compose],[data-edit],[data-copynick],[data-status],[data-copytpl],[data-copyq]");
+      if(!t) return;
+
+      if(t.dataset.del){
+        const id = t.dataset.del;
+        const c = state.contacts.find(x=>x.id===id);
+        if(c && confirm("Удалить «" + (c.company||c.tg) + "» из базы?")){
+          state.contacts = state.contacts.filter(x=>x.id!==id);
+          save(); renderContacts();
+        }
+        return;
+      }
+      if(t.dataset.compose){ openComposer(t.dataset.compose); return; }
+      if(t.dataset.edit){ openAdd(t.dataset.edit); return; }
+      if(t.dataset.copynick){
+        const c = state.contacts.find(x=>x.id===t.dataset.copynick);
+        if(c && await copyText("@" + slug(c.tg))) toast("Ник скопирован");
+        return;
+      }
+      if(t.dataset.copytpl){
+        const tpl = TEMPLATES.find(x=>x.n===Number(t.dataset.copytpl));
+        if(tpl && await copyText(tpl.text)) toast("Шаблон скопирован — не забудь заменить плейсхолдеры");
+        return;
+      }
+      if(t.dataset.copyq){
+        if(await copyText(t.dataset.copyq)) toast("Запрос скопирован");
+        return;
+      }
+    });
+
+    // смена статуса
+    document.addEventListener("change", (e)=>{
+      const sel = e.target.closest("select[data-status]");
+      if(!sel) return;
+      const c = state.contacts.find(x=>x.id===sel.dataset.status);
+      if(!c) return;
+      c.status = sel.value;
+      if(sel.value !== "new" && !c.touched) c.touched = todayISO();
+      save(); renderContacts();
+    });
+
+    // добавление
+    $("#btnAdd").addEventListener("click", ()=> openAdd(null));
+    $("#btnBulk").addEventListener("click", ()=>{
+      $("#bulkText").value = "";
+      $("#bulkWarn").textContent = "";
+      $("#bulkDialog").hidden = false;
+      setTimeout(()=> $("#bulkText").focus(), 30);
+    });
+    $("#bulkText").addEventListener("input", ()=>{
+      const n = parseBulk($("#bulkText").value, $("#bulkNiche").value).length;
+      $("#bulkWarn").style.color = "#8B9AB3";
+      $("#bulkWarn").textContent = n ? "К добавлению: " + n : "";
+    });
+    $("#bulkSave").addEventListener("click", bulkSave);
+    $("#bulkCancel").addEventListener("click", ()=>{ $("#bulkDialog").hidden = true; });
+    $("#fSave").addEventListener("click", saveContact);
+    $("#fCancel").addEventListener("click", ()=>{ $("#addDialog").hidden = true; editingId = null; });
+
+    // композер
+    $("#cTemplate").addEventListener("change", e=>{ composerCtx.tplN = Number(e.target.value); applyTemplate(); });
+    $("#cShuffle").addEventListener("click", shuffleTemplate);
+    $("#cCopy").addEventListener("click", async ()=>{
+      const ok = await copyText($("#cText").value);
+      if(ok){ toast("Скопировано — вставляй в Telegram"); markWrote(composerCtx.contactId); }
+      else toast("Браузер не дал скопировать — выдели текст вручную");
+    });
+    $("#cCopyOpen").addEventListener("click", async ()=>{
+      const c = state.contacts.find(x=>x.id===composerCtx.contactId);
+      await copyText($("#cText").value);
+      markWrote(composerCtx.contactId);
+      if(c && c.tg) window.open(tgUrl(c), "_blank", "noopener");
+      toast("Скопировано — чат открыт");
+    });
+    $("#cClose").addEventListener("click", ()=>{ $("#composer").hidden = true; });
+
+    // клик по фону закрывает модалки
+    ["composer","addDialog","bulkDialog"].forEach(id=>{
+      $("#"+id).addEventListener("click", e=>{ if(e.target.id === id) { $("#"+id).hidden = true; editingId = null; } });
+    });
+
+    // экспорт / импорт
+    $("#btnExport").addEventListener("click", exportJSON);
+    $("#btnImport").addEventListener("click", ()=> $("#fileImport").click());
+    $("#fileImport").addEventListener("change", e=>{
+      if(e.target.files && e.target.files[0]) importJSON(e.target.files[0]);
+      e.target.value = "";
+    });
+
+    // горячие клавиши
+    document.addEventListener("keydown", e=>{
+      if(e.key === "Escape"){
+        $("#composer").hidden = true;
+        $("#addDialog").hidden = true;
+        $("#bulkDialog").hidden = true;
+        editingId = null;
+      }
+      if((e.ctrlKey || e.metaKey) && e.key === "Enter" && !$("#composer").hidden){
+        e.preventDefault();
+        $("#cCopy").click();
+      }
+    });
+  }
+
+  // ---------------- старт ----------------
+  load();
+  bind();
+  renderContacts();
+  renderTemplates();
+  renderQueries();
+})();
+</script>
+</body>
+</html>
